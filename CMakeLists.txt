@@ -19,7 +19,7 @@ set( GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
 add_subdirectory( glfw )
 add_subdirectory( glad )
 
-add_executable(SocketHeatmapDisplay main.cpp rendering.h rendering.cpp shader.h socketdatareceiver.h socketdatareceiver.cpp)
+add_executable(SocketHeatmapDisplay main.cpp rendering.h rendering.cpp shader.h)
 
 add_dependencies(SocketHeatmapDisplay copy_resources)
 

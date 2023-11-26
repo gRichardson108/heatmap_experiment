@@ -19,8 +19,8 @@ Texture2D allocateTexture(Image image) {
         texture.id = id;
 
         glBindTexture(GL_TEXTURE_2D, id);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height,
-                     0, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char *) image.data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height,
+                     0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char *) image.data);
 
         // Texture parameters configuration
         // NOTE: glTexParameteri does NOT affect texture uploading, just the way it's used
@@ -38,8 +38,8 @@ Texture2D allocateTexture(Image image) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);       // Set texture to clamp on y-axis
     }
 #else
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);       // Set texture to repeat on x-axis
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);       // Set texture to repeat on y-axis
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);       // Set texture to repeat on x-axis
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);       // Set texture to repeat on y-axis
 #endif
 
         // Magnification and minification filters
@@ -67,15 +67,15 @@ int GetRandomValue(int min, int max) {
 }
 
 void fillImageWithNoise(Image &image, float factor) {
-    Color *pixels = (Color *) image.data;
+    ColorRGBA *pixels = (ColorRGBA *) image.data;
     for (int i = 0; i < image.width * image.height; i++) {
-        if (GetRandomValue(0, 99) < (int) (factor * 100.0f)) pixels[i] = WHITE;
-        else pixels[i] = BLACK;
+        if (GetRandomValue(0, 99) < (int) (factor * 100.0f)) pixels[i] = RGBA::RED;
+        else pixels[i] = RGBA::BLUE;
     }
 }
 
 void fillImageWithHorizontalStripes(Image &image, int width) {
-    Color *pixels = (Color *) image.data;
+    ColorRGBA *pixels = (ColorRGBA *) image.data;
     for (int i = 0; i < image.height; i++) {
         for (int j = 0; j < image.width; j++) {
             // todo
@@ -91,7 +91,7 @@ void drawTexture(Texture2D texture) {
 
     glBegin(GL_QUADS);
 
-    glColor4ub(WHITE.r, WHITE.g, WHITE.b, WHITE.a);
+    glColor4ub(RGBA::WHITE.r, RGBA::WHITE.g, RGBA::WHITE.b, RGBA::WHITE.a);
     glNormal3f(0.0f, 0.0f, 1.0f);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texture.id);
@@ -119,8 +119,8 @@ void drawTexture(Texture2D texture) {
 void updateTexture(Texture2D &texture, const Image &image) {
     if (image.width != texture.width && image.height != texture.height) {
         glBindTexture(GL_TEXTURE_2D, texture.id);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height,
-                     0, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char *) image.data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height,
+                     0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char *) image.data);
 
         // Texture parameters configuration
         // NOTE: glTexParameteri does NOT affect texture uploading, just the way it's used

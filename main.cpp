@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <malloc.h>
 #include "rendering.h"
@@ -28,13 +28,6 @@ CircularTexture noiseImage;
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 int main(void) {
-    SocketBuffer buffer = initializeReceiver();
-    if (buffer.socketfd <= 0) {
-        std::cerr << "Couldn't initialize socket." << std::endl;
-        return -1;
-    }
-    memset(buffer.buffer, 0, buffer.rowCount * sizeof(SocketData));
-
     GLFWwindow *window;
     /* Initialize the library */
     if (!glfwInit())
@@ -52,17 +45,17 @@ int main(void) {
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
+    // setup GLAD
+    int version = gladLoadGL(glfwGetProcAddress);
+    if (version == 0) {
+        fprintf(stderr, "Failed to initialize OpenGL context\n");
+        return 1;
     }
 
     glClearColor(0.4f, 0.3f, 0.4f, 0.0f);
     CircularTexture noiseImage = {
             .image = {
-                .data = malloc(sizeof(Color) * 1920 * 1080),
+                .data = malloc(sizeof(ColorRGBA) * 1920 * 1080),
                 .width = screenWidth,
                 .height = screenHeight
             },
@@ -134,15 +127,9 @@ int main(void) {
         }
 
         // generate a random row of data
+#if 0
         Color *pixels = (Color *) noiseImage.image.data;
         for (int i = 0; i < screenWidth; i++) {
-#if 0
-            if (noiseImage.insert_row & 0b1 == 0) {
-                pixels[i + noiseImage.insert_row * noiseImage.image.width] = WHITE;
-            } else {
-                pixels[i + noiseImage.insert_row * noiseImage.image.width] = BLACK;
-            }
-#endif
             float percentage = (float) i / (float) screenWidth;
             unsigned char val = percentage * 255;
             pixels[i + (noiseImage.insert_row * noiseImage.image.height)] = { val, val, val, 255 };
@@ -156,9 +143,7 @@ int main(void) {
         // looks like there are resources for sending subregions in some openGL
         // versions: https://stackoverflow.com/questions/18149967/updating-only-a-horizontal-subregion-of-a-texture-in-opengl-es-2-0
         updateTexture(noiseImage.texture, noiseImage.image);
-
-        glLoadIdentity();
-        glMultMatrixf(MatrixToFloatV(MatrixIdentity()).v);
+#endif
 
         /* Render here */
         glClearColor(0.4f, 0.3f, 0.4f, 0.0f);
@@ -169,7 +154,7 @@ int main(void) {
             offset[1] += 0.01;
             glUniform2fv(textureOffsetId, 1, offset);
             glUniform2fv(textureScaleId, 1, scale);
-            //fillImageWithNoise(noiseImage, 0.5f);
+            fillImageWithNoise(noiseImage.image, 0.5f);
             updateTexture(noiseImage.texture, noiseImage.image);
         }
 
@@ -198,8 +183,6 @@ int main(void) {
     glDeleteBuffers(1, &EBO);
 
     glfwTerminate();
-
-    freeReceiver(buffer);
 
     return 0;
 }

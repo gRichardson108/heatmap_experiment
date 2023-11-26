@@ -15,15 +15,31 @@ typedef struct Vector3 {
 } Vector3;
 
 /// Color type, RGBA (32bit)
-struct Color {
+struct ColorRGBA {
     unsigned char r;
     unsigned char g;
     unsigned char b;
     unsigned char a;
 };
 
-const Color WHITE = { 255, 255, 255, 255};
-const Color BLACK = { 0, 0, 0, 255};
+struct ColorRGB {
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
+};
+
+namespace RGBA {
+    const ColorRGBA WHITE = {255, 255, 255, 255};
+    const ColorRGBA BLACK = {0, 0, 0, 255};
+    const ColorRGBA RED = {255, 0, 0, 255};
+    const ColorRGBA BLUE = {0, 0, 255, 255};
+};
+namespace RGB {
+    const ColorRGB WHITE = {255, 255, 255};
+    const ColorRGB BLACK = {0, 0, 0};
+    const ColorRGB RED = {255, 0, 0};
+    const ColorRGB BLUE = {0, 0, 255};
+};
 
 /// Image, pixel data stored in CPU memory (RAM)
 struct Image {
