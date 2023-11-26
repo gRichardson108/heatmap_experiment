@@ -127,12 +127,12 @@ int main(void) {
         }
 
         // generate a random row of data
-#if 0
-        Color *pixels = (Color *) noiseImage.image.data;
+        ColorRGBA *pixels = (ColorRGBA *) noiseImage.image.data;
         for (int i = 0; i < screenWidth; i++) {
-            float percentage = (float) i / (float) screenWidth;
-            unsigned char val = percentage * 255;
-            pixels[i + (noiseImage.insert_row * noiseImage.image.height)] = { val, val, val, 255 };
+            pixels[i + (noiseImage.insert_row * noiseImage.image.width)] = {(unsigned char) GetRandomValue(0, 255),
+                                                                            (unsigned char) GetRandomValue(0, 255),
+                                                                            (unsigned char) GetRandomValue(0, 255), 
+                                                                            255};
         }
         noiseImage.insert_row++;
         if (noiseImage.insert_row > noiseImage.image.height) {
@@ -143,7 +143,6 @@ int main(void) {
         // looks like there are resources for sending subregions in some openGL
         // versions: https://stackoverflow.com/questions/18149967/updating-only-a-horizontal-subregion-of-a-texture-in-opengl-es-2-0
         updateTexture(noiseImage.texture, noiseImage.image);
-#endif
 
         /* Render here */
         glClearColor(0.4f, 0.3f, 0.4f, 0.0f);
@@ -154,8 +153,8 @@ int main(void) {
             offset[1] += 0.01;
             glUniform2fv(textureOffsetId, 1, offset);
             glUniform2fv(textureScaleId, 1, scale);
-            fillImageWithNoise(noiseImage.image, 0.5f);
-            updateTexture(noiseImage.texture, noiseImage.image);
+            //fillImageWithNoise(noiseImage.image, 0.5f);
+            //updateTexture(noiseImage.texture, noiseImage.image);
         }
 
         // drawing the texture
