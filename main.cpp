@@ -153,8 +153,6 @@ int main(void) {
             offset[1] += 0.01;
             glUniform2fv(textureOffsetId, 1, offset);
             glUniform2fv(textureScaleId, 1, scale);
-            //fillImageWithNoise(noiseImage.image, 0.5f);
-            //updateTexture(noiseImage.texture, noiseImage.image);
         }
 
         // drawing the texture

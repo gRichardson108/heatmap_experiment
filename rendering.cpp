@@ -74,48 +74,6 @@ void fillImageWithNoise(Image &image, float factor) {
     }
 }
 
-void fillImageWithHorizontalStripes(Image &image, int width) {
-    ColorRGBA *pixels = (ColorRGBA *) image.data;
-    for (int i = 0; i < image.height; i++) {
-        for (int j = 0; j < image.width; j++) {
-            // todo
-        }
-    }
-}
-
-void drawTexture(Texture2D texture) {
-    Vector2 topLeft = {0, 0};
-    Vector2 topRight = {(float) texture.width, 0};
-    Vector2 bottomLeft = {0, (float) texture.height};
-    Vector2 bottomRight = {(float) texture.width, (float) texture.height};
-
-    glBegin(GL_QUADS);
-
-    glColor4ub(RGBA::WHITE.r, RGBA::WHITE.g, RGBA::WHITE.b, RGBA::WHITE.a);
-    glNormal3f(0.0f, 0.0f, 1.0f);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texture.id);
-
-    // Set texture coordinates for top-left vertex
-    glTexCoord2f(0, 0);
-    glVertex2f(topLeft.x, topLeft.y);
-
-    // Set texture coordinates for bottom-left vertex
-    glTexCoord2f(0, 1);
-    glVertex2f(bottomLeft.x, bottomLeft.y);
-
-    // Set texture coordinates for bottom-right vertex
-    glTexCoord2f(1, 1);
-    glVertex2f(bottomRight.x, bottomRight.y);
-
-    // Set texture coordinates for top-right vertex
-    glTexCoord2f(1, 0);
-    glVertex2f(topRight.x, topRight.y);
-
-    glEnd();
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 void updateTexture(Texture2D &texture, const Image &image) {
     if (image.width != texture.width && image.height != texture.height) {
         glBindTexture(GL_TEXTURE_2D, texture.id);

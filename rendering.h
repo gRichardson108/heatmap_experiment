@@ -109,13 +109,4 @@ int GetRandomValue(int min, int max);
 /// \param factor Percentage of noise to create as white
 void fillImageWithNoise(Image& image, float factor);
 
-/// Overwrites an image with horizontal black and white stripes.
-/// \param image The image to fill with stripes.
-/// \param width The width of the stripes
-void fillImageWithHorizontalStripes(Image& image, int width);
-
-/// Oversimplified function that draws the texture over an identical screen space.
-/// \param texture The texture to draw.
-void drawTexture(Texture2D texture);
-
 #endif //SOCKETHEATMAPDISPLAY_RENDERING_H
