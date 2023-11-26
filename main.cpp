@@ -53,7 +53,7 @@ int main(void) {
     }
 
     glClearColor(0.4f, 0.3f, 0.4f, 0.0f);
-    CircularTexture noiseImage = {
+    noiseImage = {
             .image = {
                 .data = malloc(sizeof(ColorRGBA) * 1920 * 1080),
                 .width = screenWidth,
