@@ -190,7 +190,6 @@ int main(void) {
 
     // ImGui demo window state
     bool show_demo_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     
     noiseImage = {
             .image = {
@@ -256,6 +255,10 @@ int main(void) {
     GL_CALL(glUniform2fv(textureOffsetId, 1, offset));
     GL_CALL(glUniform2fv(textureScaleId, 1, scale));
     bool paused = true;
+    int scanSpeed = 1;
+    int redRange[2] = {0, 255};
+    int greenRange[2] = {0, 255};
+    int blueRange[2] = {0, 255};
     
     while (!glfwWindowShouldClose(window)) {
         // Poll and handle events (inputs, window resize, etc.)
@@ -281,15 +284,17 @@ int main(void) {
 
         // generate a random row of data
         ColorRGBA *pixels = (ColorRGBA *) noiseImage.image.data;
-        for (int i = 0; i < screenWidth; i++) {
-            pixels[i + (noiseImage.insert_row * noiseImage.image.width)] = {(unsigned char) GetRandomValue(0, 255),
-                                                                            (unsigned char) GetRandomValue(0, 255),
-                                                                            (unsigned char) GetRandomValue(0, 255),
-                                                                            255};
-        }
-        noiseImage.insert_row++;
-        if (noiseImage.insert_row > noiseImage.image.height) {
-            noiseImage.insert_row = 0;
+        for (int scan = 0; scan < scanSpeed; scan++) {
+            for (int i = 0; i < screenWidth; i++) {
+                pixels[i + (noiseImage.insert_row * noiseImage.image.width)] = {(unsigned char) GetRandomValue(redRange[0], redRange[1]),
+                                                                                (unsigned char) GetRandomValue(greenRange[0], greenRange[1]),
+                                                                                (unsigned char) GetRandomValue(blueRange[0], blueRange[1]),
+                                                                                255};
+            }
+            noiseImage.insert_row++;
+            if (noiseImage.insert_row > noiseImage.image.height) {
+                noiseImage.insert_row = 0;
+            }
         }
 
         int display_w, display_h;
@@ -332,25 +337,15 @@ int main(void) {
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
-            static float f = 0.0f;
-            static int counter = 0;
-
-            ImGui::Begin(
-                    "Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
+            ImGui::Begin("Scan Settings");
             ImGui::Text(
-                    "This is some useful text.");               // Display some text (you can use a format strings too)
+                    "Adjust scan settings.");               // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float *) &clear_color); // Edit 3 floats representing a color
-
-            if (ImGui::Button(
-                    "Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
+            ImGui::SliderInt("Scan Speed", &scanSpeed, 1, 10);
+            ImGui::SliderInt2("Red", redRange, 0, 255);
+            ImGui::SliderInt2("Green", greenRange, 0, 255);
+            ImGui::SliderInt2("Blue", blueRange, 0, 255);
+            
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
                         ImGui::GetIO().Framerate);
             ImGui::End();
