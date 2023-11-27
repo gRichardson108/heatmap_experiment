@@ -247,8 +247,6 @@ int main(void) {
     auto textureOffsetId = glGetUniformLocation(ourShader.ID, "textureOffset");
     auto textureScaleId = glGetUniformLocation(ourShader.ID, "textureScale");
 
-    double previousTime = glfwGetTime();
-    int frameCount = 0;
     /* Loop until the user closes the window */
     GLfloat offset[2] = {};
     GLfloat scale[2] = {1.0f, 1.0f};
@@ -274,13 +272,6 @@ int main(void) {
 
         //====================================
         //====== Rendering for noise =========
-        double currentTime = glfwGetTime();
-        frameCount++;
-        if (currentTime - previousTime >= 1.0) {
-            std::cout << frameCount << "fps\n";
-            previousTime = currentTime;
-            frameCount = 0;
-        }
 
         // generate a random row of data
         ColorRGBA *pixels = (ColorRGBA *) noiseImage.image.data;
