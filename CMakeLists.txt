@@ -19,7 +19,20 @@ set( GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
 add_subdirectory( glfw )
 add_subdirectory( glad )
 
-add_executable(SocketHeatmapDisplay main.cpp rendering.h rendering.cpp shader.h)
+# Dear ImGui
+set(IMGUI_DIR imgui/)
+include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends)
+set(IMGUI_FILES 
+    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_demo.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+)
+
+add_executable(SocketHeatmapDisplay main.cpp ${IMGUI_FILES} rendering.h rendering.cpp shader.h)
 
 add_dependencies(SocketHeatmapDisplay copy_resources)
 

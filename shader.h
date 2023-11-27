@@ -8,6 +8,15 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+#define GL_DEBUG
+#ifdef GL_DEBUG
+#define GL_CALL(_CALL)      do { _CALL; GLenum gl_err = glGetError(); if (gl_err != 0) printf("%s:%d GL error 0x%x returned from '%s'.\n", __FILE__, __LINE__, gl_err, #_CALL); } while (0)  // Call with error check
+#define GL_CHECK      do { GLenum gl_err = glGetError(); if (gl_err != 0) fprintf(stderr, "%s:%d GL error 0x%x returned \n", __FILE__, __LINE__, gl_err); } while (0)  // Just error check
+#else
+#define GL_CALL(_CALL)      _CALL
+#define GL_CHECK      (void)0
+#endif
+
 #include <glad/gl.h>
 
 #include <string>
@@ -79,7 +88,7 @@ public:
     // ------------------------------------------------------------------------
     void use()
     {
-        glUseProgram(ID);
+        GL_CALL(glUseProgram(ID));
     }
     // utility uniform functions
     // ------------------------------------------------------------------------

@@ -2,25 +2,24 @@
 // Created by garret on 11/18/22.
 //
 
-#include <GL/gl.h>
+#include <glad/gl.h>
 #include <cstdlib>
 #include "rendering.h"
 #include <iostream>
-
 
 Texture2D allocateTexture(Image image) {
     Texture2D texture = {0};
     if (image.width != 0 && image.height != 0) {
         unsigned int id = 0;
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+        GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
 
-        glGenTextures(1, &id);              // Generate texture id
+        GL_CALL(glGenTextures(1, &id));              // Generate texture id
         texture.id = id;
 
-        glBindTexture(GL_TEXTURE_2D, id);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height,
-                     0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char *) image.data);
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, id));
+        GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height,
+                     0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char *) image.data));
 
         // Texture parameters configuration
         // NOTE: glTexParameteri does NOT affect texture uploading, just the way it's used
@@ -28,31 +27,31 @@ Texture2D allocateTexture(Image image) {
         // NOTE: OpenGL ES 2.0 with no GL_OES_texture_npot support (i.e. WebGL) has limited NPOT support, so CLAMP_TO_EDGE must be used
     if (RLGL.ExtSupported.texNPOT)
     {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);       // Set texture to repeat on x-axis
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);       // Set texture to repeat on y-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));       // Set texture to repeat on x-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));       // Set texture to repeat on y-axis
     }
     else
     {
         // NOTE: If using negative texture coordinates (LoadOBJ()), it does not work!
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);       // Set texture to clamp on x-axis
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);       // Set texture to clamp on y-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));       // Set texture to clamp on x-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));       // Set texture to clamp on y-axis
     }
 #else
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);       // Set texture to repeat on x-axis
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);       // Set texture to repeat on y-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));       // Set texture to repeat on x-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));       // Set texture to repeat on y-axis
 #endif
 
         // Magnification and minification filters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
         // Unbind current texture
-        glBindTexture(GL_TEXTURE_2D, 0);
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     }
     return texture;
 }
 
 void freeTexture(Texture2D texture) {
-    glDeleteTextures(1, &texture.id);
+    GL_CALL(glDeleteTextures(1, &texture.id));
 }
 
 
@@ -76,9 +75,10 @@ void fillImageWithNoise(Image &image, float factor) {
 
 void updateTexture(Texture2D &texture, const Image &image) {
     if (image.width != texture.width && image.height != texture.height) {
-        glBindTexture(GL_TEXTURE_2D, texture.id);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height,
-                     0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char *) image.data);
+        GL_CALL(glActiveTexture(GL_TEXTURE0));
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, texture.id));
+        GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height,
+                     0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char *) image.data));
 
         // Texture parameters configuration
         // NOTE: glTexParameteri does NOT affect texture uploading, just the way it's used
@@ -86,25 +86,25 @@ void updateTexture(Texture2D &texture, const Image &image) {
         // NOTE: OpenGL ES 2.0 with no GL_OES_texture_npot support (i.e. WebGL) has limited NPOT support, so CLAMP_TO_EDGE must be used
     if (RLGL.ExtSupported.texNPOT)
     {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);       // Set texture to repeat on x-axis
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);       // Set texture to repeat on y-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));       // Set texture to repeat on x-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));       // Set texture to repeat on y-axis
     }
     else
     {
         // NOTE: If using negative texture coordinates (LoadOBJ()), it does not work!
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);       // Set texture to clamp on x-axis
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);       // Set texture to clamp on y-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));       // Set texture to clamp on x-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));       // Set texture to clamp on y-axis
     }
 #else
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);       // Set texture to repeat on x-axis
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);       // Set texture to repeat on y-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));       // Set texture to repeat on x-axis
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));       // Set texture to repeat on y-axis
 #endif
 
         // Magnification and minification filters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // Alternative: GL_LINEAR
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // Alternative: GL_LINEAR
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));  // Alternative: GL_LINEAR
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));  // Alternative: GL_LINEAR
         // Unbind current texture
-        glBindTexture(GL_TEXTURE_2D, 0);
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     }
 }
 
